@@ -29,6 +29,9 @@ white = (255, 255, 255)
 player1_score = player2_score = 0
 checked_indexes = []
 
+# variable to control player turns
+turns = 2
+
 # Variable to control loop
 running = True 
 
@@ -89,8 +92,10 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
         if event.type == pygame.MOUSEBUTTONDOWN and not clicked:
             clicked = True
+            turns -= 1
         if event.type == pygame.MOUSEBUTTONUP and clicked:
             clicked = False
             pos = pygame.mouse.get_pos() # get x,y coordinate of the mouse position
@@ -98,7 +103,9 @@ while running:
 
             if markers[y//square_wid][x // square_height] == 0:
                 markers[y//square_wid][x // square_height] = player
-                player = (player % 2) + 1
+                if turns <= 0:
+                    player = (player % 2) + 1 #add 2 at a time
+                    turns = 2
             track_points() # Only adjust the scores after the player has made a move to prevent the score from being update for every loop. 
                 
     pygame.display.update()
