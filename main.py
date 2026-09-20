@@ -27,7 +27,7 @@ white = (255, 255, 255)
 
 # variables to keep track of points
 player1_score = player2_score = 0
-checked_indexes = []
+checked = set()
 
 # variable to control player turns
 turns = 2
@@ -61,27 +61,53 @@ def draw_markers():
 # check for points
 def track_points():
 
-    global player2_score, player1_score
+    global player2_score, player1_score, checked
 
     # Horizontal check
-    for i in range(len(markers)):
-        groups = [(markers[i][j], markers[i][j+1], markers[i][j+2]) for j in range(len(markers[i]) -2)]
+    # for i in range(len(markers)):
+    #     groups = [(markers[i][j], markers[i][j+1], markers[i][j+2]) for j in range(len(markers[i]) -2)]
         
-        if (1,2,1) in groups:
-            player1_score += 1
-        elif (2,1,2) in groups:
-            player2_score += 1
-    
+    #     if (1,2,1) in groups:
+    #         player1_score += 1
+    #     elif (2,1,2) in groups:
+    #         player2_score += 1
+    for i in range(ROWS):
+        for j in range(COLS - 2):
+            if (i,j) in checked or (i, j+1) in checked or (i, j + 2) in checked:
+                continue
+            if markers[i][j] == 1 and markers[i][j + 1] == 2 and markers[i][j + 2] == 1:  #for player1 
+                player1_score += 1
+                # markers[i][j] = markers[i][j +1] = markers[i][j + 2] = -1
+                checked.update({(i,j), (i, j+1), (i, j + 2)})
+            elif markers[i][j] == 2 and markers[i][j + 1] == 1 and markers[i][j + 2] == 2:  #for player2
+                player2_score += 1
+                # markers[i][j] = markers[i][j +1] = markers[i][j + 2] = -1
+                checked.update({(i,j), (i, j+1), (i, j + 2)})
+            
+
         
     
     # Vertical check
-    for j in range(COLS):
-        groups = [(markers[i][j], markers[i+1][j], markers[i+2][j]) for i in range(ROWS -2)]
+    # for j in range(COLS):
+    #     groups = [(markers[i][j], markers[i+1][j], markers[i+2][j]) for i in range(ROWS -2)]
 
-        if (1,2,1) in groups:
-            player1_score += 1
-        elif (2,1,2) in groups:
-            player2_score += 1
+    #     if (1,2,1) in groups:
+    #         player1_score += 1
+    #     elif (2,1,2) in groups:
+    #         player2_score += 1
+    
+    for j in range(COLS):
+            for i in range(ROWS - 2):
+                if (i,j) in checked or (i,j) in checked or (i + 2, j) in checked:
+                    continue
+                if markers[i ][j] == 1 and markers[i + 1][j] == 2 and markers[i + 2][j] == 1:  #for player1 
+                    player1_score += 1
+                    # markers[i][j] = markers[i +1][j] = markers[i + 2][j] = -1
+                    checked.update({(i,j), (i,j), (i + 2, j)})
+                elif markers[i][j] == 2 and markers[i + 1][j] == 1 and markers[i + 2][j] == 2:  #for player2
+                    player2_score += 1
+                    # markers[i][j] = markers[i + 1][j] = markers[i + 2][j] = -2
+                    checked.update({(i,j), (i,j), (i + 2, j)})
 
 while running:
 
@@ -104,7 +130,7 @@ while running:
             if markers[y//square_wid][x // square_height] == 0:
                 markers[y//square_wid][x // square_height] = player
                 if turns <= 0:
-                    player = (player % 2) + 1 #add 2 at a time
+                    player = (player % 2) + 1 # add 2 at a time
                     turns = 2
             track_points() # Only adjust the scores after the player has made a move to prevent the score from being update for every loop. 
                 
